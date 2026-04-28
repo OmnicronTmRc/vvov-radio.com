@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VVOV Radio — Finnmark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #07090f;
+      --surface:  #0d1220;
+      --card:     #111827;
+      --border:   #1e2d45;
+      --accent1:  #00e5c8;   /* teal aurora */
+      --accent2:  #7c3aff;   /* violet aurora */
+      --accent3:  #ff5f6d;   /* rose */
+      --text:     #e8edf5;
+      --muted:    #5a6a82;
+      --live:     #00e5a0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Aurora background ── */
+    .aurora {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .aurora::before,
+    .aurora::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.18;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+    .aurora::before {
+      width: 800px; height: 500px;
+      background: radial-gradient(ellipse, var(--accent2), transparent 70%);
+      top: -100px; left: -200px;
+    }
+    .aurora::after {
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, var(--accent1), transparent 70%);
+      bottom: -100px; right: -150px;
+      animation-delay: -9s;
+    }
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(60px, 40px) scale(1.1); }
+    }
+
+    /* ── Layout ── */
+    .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+    /* ── Header ── */
+    header {
+      padding: 36px 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+    .logo-main {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      letter-spacing: -2px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo-sub {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,229,160,0.08);
+      border: 1px solid rgba(0,229,160,0.25);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--live);
+    }
+    .live-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--live);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* ── Hero player ── */
+    .hero {
+      padding: 60px 0 48px;
+      text-align: center;
+    }
+
+    /* NEW LIVE BUTTON STYLE */
+    .live-link-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      margin-bottom: 32px;
+      background: rgba(0, 229, 200, 0.05);
+      border: 1px solid var(--accent1);
+      color: var(--accent1);
+      text-decoration: none;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      border-radius: 100px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+    .live-link-btn:hover {
+      background: var(--accent1);
+      color: var(--bg);
+      box-shadow: 0 0 25px rgba(0, 229, 200, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 6vw, 4rem);
+      line-height: 1.05;
+      margin-bottom: 14px;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, var(--accent1) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      max-width: 500px;
+      margin: 0 auto 48px;
+    }
+
+    /* ── Player card ── */
+    .player-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 36px 40px;
+      max-width: 580px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .player-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+    }
+
+    .now-playing-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .track-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      min-height: 1.6em;
+    }
+    .track-artist {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* Waveform visualizer */
+    .waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      height: 48px;
+      margin-bottom: 28px;
+    }
+    .bar {
+      width: 4px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, var(--accent1), var(--accent2));
+      transform-origin: bottom;
+      transition: height 0.1s;
+    }
+    .bar.playing { animation: wave 1.2s ease-in-out infinite alternate; }
+    .bar:nth-child(2n)   { animation-delay: -0.4s; }
+    .bar:nth-child(3n)   { animation-delay: -0.8s; }
+    .bar:nth-child(4n)   { animation-delay: -0.2s; }
+    .bar:nth-child(5n)   { animation-delay: -0.6s; }
+    @keyframes wave {
+      from { height: 6px; }
+      to   { height: 36px; }
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .btn-play {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 0 0 rgba(0,229,200,0);
+    }
+    .btn-play:hover {
+      transform: scale(1.07);
+      box-shadow: 0 0 30px 6px rgba(0,229,200,0.25);
+    }
+    .btn-play svg { width: 26px; height: 26px; fill: #07090f; }
+
+    .btn-icon {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.1); }
+    .btn-icon svg { width: 18px; height: 18px; fill: var(--muted); }
+
+    /* Volume */
+    .volume-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .volume-icon svg { width: 16px; height: 16px; fill: var(--muted); }
+    .volume-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--accent1);
+      cursor: pointer;
+    }
+
+    /* ── Municipalities ── */
+    .section { padding: 64px 0; }
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .kommune-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .kommune-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .kommune-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gradient);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .kommune-card:hover { transform: translateY(-3px); border-color: var(--accent1); box-shadow: 0 8px 32px rgba(0,229,200,0.08); }
+    .kommune-card:hover::after { opacity: 1; }
+
+    .kommune-card[data-k="tana"]     { --gradient: linear-gradient(90deg,#00e5c8,#00bfff); }
+    .kommune-card[data-k="nesseby"]  { --gradient: linear-gradient(90deg,#7c3aff,#a855f7); }
+    .kommune-card[data-k="batsfjord"]{ --gradient: linear-gradient(90deg,#ff5f6d,#f59e0b); }
+    .kommune-card[data-k="berlevag"] { --gradient: linear-gradient(90deg,#00e5a0,#3b82f6); }
+
+    .kommune-no {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .kommune-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+    .kommune-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .kommune-pop {
+      margin-top: 16px;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--accent1);
+    }
+
+    /* ── Program grid ── */
+    .program-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .program-item {
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      align-items: center;
+      gap: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      transition: border-color 0.15s;
+    }
+    .program-item:hover { border-color: var(--border); background: rgba(255,255,255,0.02); }
+    .program-item.active { border-color: rgba(0,229,200,0.35); background: rgba(0,229,200,0.04); }
+    .program-time { font-size: 0.75rem; color: var(--muted); }
+    .program-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .program-tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      padding: 4px 10px;
+      border-radius: 100px;
+      background: rgba(124,58,255,0.15);
+      color: #a78bfa;
+    }
+    .program-tag.news  { background: rgba(0,229,200,0.1); color: var(--accent1); }
+    .program-tag.music { background: rgba(255,95,109,0.1); color: #ff8a96; }
+    .program-tag.live  { background: rgba(0,229,160,0.1); color: var(--live); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .footer-left .logo-main { font-size: 1.4rem; }
+    .footer-nav { display: flex; gap: 24px; }
+    .footer-nav a { font-size: 0.75rem; color: var(--muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.2s; }
+    .footer-nav a:hover { color: var(--text); }
+    .footer-copy { font-size: 0.65rem; color: var(--muted); }
+
+    /* ── Utility ── */
+    .divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+    @media (max-width: 600px) {
+      .player-card { padding: 24px 20px; }
+      header { flex-direction: column; gap: 16px; text-align: center; }
+      footer { flex-direction: column; align-items: flex-start; }
+      .program-item { grid-template-columns: 70px 1fr; }
+      .program-tag { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="aurora"></div>
+
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <span class="logo-main">VVOV Radio</span>
+      <span class="logo-sub">vvov-radio.no &nbsp;·&nbsp; Finnmark</span>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      DIREKTE
+    </div>
+  </header>
+</div>
+
+<div class="wrap">
+  <section class="hero">
+    
+    <div>
+      <a href="https://vvov.live/" target="_blank" rel="noopener noreferrer" class="live-link-btn">
+        START EN CHAT MED VVOV.AI 
+      </a>
+    </div>
+
+    <p class="hero-eyebrow">Nettradio fra Øst-Finnmark</p>
+    <h1 class="hero-title">Stemmen til<br><span>fire kommuner</span></h1>
+    <p class="hero-desc">
+      VVOV Radio samler Tana, Nesseby, Båtsfjord og Berlevåg i én felles radiostemme —
+      nyheter, musikk og kultur fra hjertet av Finnmark, døgnet rundt.
+    </p>
+
+    <div class="player-card">
+      <p class="now-playing-label">Spilles nå</p>
+      <div class="track-title" id="track-title">
+        <span class="cc_streaminfo" data-type="tracktitle" data-username="gavrilovic">VVOV-radio</span>
+    </div>
+    
+    <div class="track-artist" id="track-artist">
+        <span class="cc_streaminfo" data-type="trackartist" data-username="gavrilovic">Live fra VVOV IT Studio</span>
+
+      <div class="waveform" id="waveform">
+        </div>
+
+      <div class="controls">
+        <button class="btn-icon" title="Forrige" onclick="skipPrev()">
+          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="btn-play" id="btn-play" onclick="togglePlay()">
+          <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="btn-icon" title="Neste" onclick="skipNext()">
+          <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+      </div>
+
+      <div class="volume-row">
+        <span class="volume-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </span>
+        <input type="range" class="volume-slider" id="volume" min="0" max="100" value="80" oninput="setVolume(this.value)" />
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section class="section">
+    <p class="section-label">Våre kommuner</p>
+    <div class="kommune-grid">
+
+      <a href="https://www.tana.kommune.no/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+        <div class="kommune-card" data-k="tana">
+          <h2 class="kommune-name">Tana</h2>
+          <p class="kommune-desc">Langs elva Tanaelva, en av Europas beste lakseelver. Samisk kultur og naturlandskap i verdensklasse.</p>
+          <p class="kommune-pop">▸ Deatnu / Tana</p>
+        </div>
+      </a>
+
+      <a href="https://www.nesseby.kommune.no/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+        <div class="kommune-card" data-k="nesseby">
+          <h2 class="kommune-name">Nesseby</h2>
+          <p class="kommune-desc">Unjárgga gielda — samisk hjerte ved Varangerfjorden. Tradisjon, fellesskap og vidde.</p>
+          <p class="kommune-pop">▸ Unjárgga gielda</p>
+        </div>
+      </a>
+
+      <a href="https://www.batsfjord.kommune.no/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+        <div class="kommune-card" data-k="batsfjord">
+          <h2 class="kommune-name">Båtsfjord</h2>
+          <p class="kommune-desc">Fiskerihovedstaden i Finnmark. Frisk kystluft, havn og et livlig lokalsamfunn ved Barentshavet.</p>
+          <p class="kommune-pop">▸ Barentshavskysten</p>
+        </div>
+      </a>
+
+      <a href="https://www.berlevag.kommune.no/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+        <div class="kommune-card" data-k="berlevag">
+          <h2 class="kommune-name">Berlevåg</h2>
+          <p class="kommune-desc">Nordlys, storm og sjel. En liten by med stor karakter — kjent fra film og hardt vær.</p>
+          <p class="kommune-pop">▸ Finnmarkskysten</p>
+        </div>
+      </a>
+
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <footer>
+    <div class="footer-left">
+      <div class="logo">
+        <span class="logo-main">VVOV Radio</span>
+        <span class="logo-sub" style="margin-top:4px;">vvov-radio.no</span>
+      </div>
+    </div>
+    <nav class="footer-nav">
+      <a href="#">Om oss</a>
+      <a href="#">Kontakt</a>
+      <a href="#">Send musikk</a>
+      <a href="#">Annonsér</a>
+    </nav>
+    <p class="footer-copy">© 2025 VVOV Radio · Tana · Nesseby · Båtsfjord · Berlevåg</p>
+  </footer>
+</div>
+
+<script>
+  /* ── STREAM URL (correct) ── */
+  const STREAM_URL = "https://gavrilovic.radioca.st/stream";
+
+  /* ── AUDIO SETUP ── */
+  const audio = new Audio(STREAM_URL);
+  audio.preload = "none";
+  audio.crossOrigin = "anonymous"; 
+  audio.volume = 0.80;
+
+  /* ── Waveform bars ── */
+  const waveform = document.getElementById('waveform');
+  const NUM_BARS = 32;
+
+  waveform.innerHTML = "";
+  for (let i = 0; i < NUM_BARS; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = (6 + Math.random() * 12) + 'px';
+    waveform.appendChild(bar);
+  }
+  const bars = document.querySelectorAll('.bar');
+
+  /* ── UI ── */
+  const playIcon = document.getElementById('play-icon');
+  const volumeSlider = document.getElementById('volume');
+
+  const PAUSE_SVG = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+  const PLAY_SVG  = '<path d="M8 5v14l11-7z"/>';
+
+  let isPlaying = false;
+
+  function updateUI() {
+    playIcon.innerHTML = isPlaying ? PAUSE_SVG : PLAY_SVG;
+
+    bars.forEach(b => {
+      if (isPlaying) {
+        b.classList.add('playing');
+      } else {
+        b.classList.remove('playing');
+        b.style.height = (6 + Math.random() * 12) + 'px';
+      }
+    });
+  }
+
+  async function togglePlay() {
+    try {
+      if (!isPlaying) {
+        await audio.play();
+        isPlaying = true;
+      } else {
+        audio.pause();
+        isPlaying = false;
+      }
+      updateUI();
+    } catch (err) {
+      console.error("Playback blocked or failed:", err);
+      isPlaying = false;
+      updateUI();
+    }
+  }
+
+  function setVolume(v) {
+    audio.volume = Math.max(0, Math.min(1, Number(v) / 100));
+  }
+
+  function skipPrev() { }
+  function skipNext() { }
+
+  if (volumeSlider) volumeSlider.addEventListener("input", e => setVolume(e.target.value));
+
+  setInterval(() => {
+    if (!isPlaying) {
+      bars.forEach(b => b.style.height = (6 + Math.random() * 12) + 'px');
+    }
+  }, 2000);
+
+  window.addEventListener("load", () => {
+    // Note: Autoplay is often blocked by browsers until user interacts.
+    // togglePlay(); 
+  });
+</script>
+<script language="javascript" type="text/javascript" src="https://curiosity.shoutca.st/system/streaminfo.js"></script>
+</body>
+</html>
