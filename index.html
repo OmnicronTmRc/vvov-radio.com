@@ -14,6 +14,7 @@
       --accent1:  #00e5c8;   /* teal aurora */
       --accent2:  #7c3aff;   /* violet aurora */
       --accent3:  #ff5f6d;   /* rose */
+      --aurora-green: #00ff88;
       --text:     #e8edf5;
       --muted:    #5a6a82;
       --live:     #00e5a0;
@@ -29,7 +30,7 @@
       overflow-x: hidden;
     }
 
-    /* ── Aurora background ── */
+    /* ── Fixed Aurora background ── */
     .aurora {
       position: fixed;
       inset: 0;
@@ -175,7 +176,7 @@
       margin: 0 auto 48px;
     }
 
-    /* ── Player Glow Wrapper ── */
+    /* ── Aurora Borealis Player Wrapper ── */
     .player-glow-wrapper {
       position: relative;
       width: 100%;
@@ -184,18 +185,40 @@
       display: block;
     }
 
+    /* The Animated Aurora Effect */
     .player-glow-wrapper::after {
       content: '';
       position: absolute;
-      top: 10%;
-      left: 5%;
-      right: 5%;
-      bottom: -20px;
-      background: linear-gradient(90deg, var(--accent1), var(--accent2));
-      filter: blur(80px);
-      opacity: 0.5;
+      top: 15%;
+      left: -5%;
+      right: -5%;
+      bottom: -30px;
+      background: linear-gradient(110deg, 
+        rgba(0, 229, 200, 0) 0%, 
+        rgba(0, 229, 200, 0.5) 20%, 
+        rgba(124, 58, 255, 0.5) 50%, 
+        rgba(0, 255, 136, 0.5) 80%, 
+        rgba(0, 255, 136, 0) 100%);
+      background-size: 200% 200%;
+      filter: blur(70px);
       z-index: -1;
-      border-radius: 40px;
+      border-radius: 100px;
+      animation: aurora-flow 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes aurora-flow {
+      0% {
+        background-position: 0% 50%;
+        transform: scale(1) skewX(-5deg);
+      }
+      50% {
+        background-position: 100% 50%;
+        transform: scale(1.05) skewX(5deg);
+      }
+      100% {
+        background-position: 0% 50%;
+        transform: scale(1) skewX(-5deg);
+      }
     }
 
     /* ── Player Card ── */
@@ -372,13 +395,6 @@
     .kommune-card[data-k="batsfjord"]{ --gradient: linear-gradient(90deg,#ff5f6d,#f59e0b); }
     .kommune-card[data-k="berlevag"] { --gradient: linear-gradient(90deg,#00e5a0,#3b82f6); }
 
-    .kommune-no {
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
     .kommune-name {
       font-family: 'Syne', sans-serif;
       font-weight: 700;
@@ -451,6 +467,7 @@
       VVOV Radio samler Tana, Nesseby, Båtsfjord og Berlevåg i én felles radiostemme.
     </p>
 
+    <!-- NEW AURORA BOREALIS PLAYER SECTION -->
     <div class="player-glow-wrapper">
       <div class="player-card">
         <p class="now-playing-label">Spilles nå</p>
@@ -510,7 +527,7 @@
       <a href="https://www.batsfjord.kommune.no/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
         <div class="kommune-card" data-k="batsfjord">
           <h2 class="kommune-name">Båtsfjord</h2>
-          <p class="kommune-desc">Fiskerihovedstaden i Finnmark. Frisk kystluft, havn og et livlig lokalsamfunn ved Barentshavet.</p>
+          <p class="kommune-desc">Fiskerihovedstaden i Finnmark. Frisk kystluft, havn og et livlig lokalsamhum ved Barentshavet.</p>
           <p class="kommune-pop">▸ Barentshavskysten</p>
         </div>
       </a>
