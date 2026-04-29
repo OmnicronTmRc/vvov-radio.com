@@ -118,13 +118,12 @@
       50%      { opacity: 0.4; transform: scale(0.7); }
     }
 
-    /* ── Hero player ── */
+    /* ── Hero section ── */
     .hero {
       padding: 60px 0 48px;
       text-align: center;
     }
 
-    /* NEW LIVE BUTTON STYLE */
     .live-link-btn {
       display: inline-block;
       padding: 12px 28px;
@@ -176,35 +175,41 @@
       margin: 0 auto 48px;
     }
 
-    /* ── Player card ── */
+    /* ── Player Glow Wrapper ── */
     .player-glow-wrapper {
       position: relative;
+      width: 100%;
       max-width: 580px;
-      margin: 0 auto;
+      margin: 48px auto;
+      display: block;
     }
 
     .player-glow-wrapper::after {
       content: '';
       position: absolute;
-      top: 15%;
-      left: 10%;
-      right: 10%;
-      bottom: -15px;
+      top: 10%;
+      left: 5%;
+      right: 5%;
+      bottom: -20px;
       background: linear-gradient(90deg, var(--accent1), var(--accent2));
-      filter: blur(60px);
-      opacity: 0.35;
+      filter: blur(80px);
+      opacity: 0.5;
       z-index: -1;
-      border-radius: 50%;
+      border-radius: 40px;
     }
 
+    /* ── Player Card ── */
     .player-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 24px;
-      padding: 36px 40px;
+      padding: 40px;
       position: relative;
       overflow: hidden;
+      width: 100%;
       backdrop-filter: blur(12px);
+      z-index: 2;
+      text-align: center;
     }
 
     .player-card::before {
@@ -392,39 +397,6 @@
       color: var(--accent1);
     }
 
-    /* ── Program grid ── */
-    .program-list {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .program-item {
-      display: grid;
-      grid-template-columns: 90px 1fr auto;
-      align-items: center;
-      gap: 20px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px 20px;
-      transition: border-color 0.15s;
-    }
-    .program-item:hover { border-color: var(--border); background: rgba(255,255,255,0.02); }
-    .program-item.active { border-color: rgba(0,229,200,0.35); background: rgba(0,229,200,0.04); }
-    .program-time { font-size: 0.75rem; color: var(--muted); }
-    .program-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
-    .program-tag {
-      font-size: 0.6rem;
-      letter-spacing: 0.12em;
-      padding: 4px 10px;
-      border-radius: 100px;
-      background: rgba(124,58,255,0.15);
-      color: #a78bfa;
-    }
-    .program-tag.news  { background: rgba(0,229,200,0.1); color: var(--accent1); }
-    .program-tag.music { background: rgba(255,95,109,0.1); color: #ff8a96; }
-    .program-tag.live  { background: rgba(0,229,160,0.1); color: var(--live); }
-
     /* ── Footer ── */
     footer {
       border-top: 1px solid var(--border);
@@ -441,15 +413,10 @@
     .footer-nav a:hover { color: var(--text); }
     .footer-copy { font-size: 0.65rem; color: var(--muted); }
 
-    /* ── Utility ── */
-    .divider { height: 1px; background: var(--border); margin: 4px 0; }
-
     @media (max-width: 600px) {
       .player-card { padding: 24px 20px; }
       header { flex-direction: column; gap: 16px; text-align: center; }
       footer { flex-direction: column; align-items: flex-start; }
-      .program-item { grid-template-columns: 70px 1fr; }
-      .program-tag { display: none; }
     }
   </style>
 </head>
@@ -472,7 +439,6 @@
 
 <div class="wrap">
   <section class="hero">
-    
     <div>
       <a href="https://vvov.live/" target="_blank" rel="noopener noreferrer" class="live-link-btn">
         START EN CHAT MED VVOV.AI 
@@ -525,7 +491,6 @@
   <section class="section">
     <p class="section-label">Våre kommuner</p>
     <div class="kommune-grid">
-
       <a href="https://www.tana.kommune.no/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
         <div class="kommune-card" data-k="tana">
           <h2 class="kommune-name">Tana</h2>
@@ -557,7 +522,6 @@
           <p class="kommune-pop">▸ Finnmarkskysten</p>
         </div>
       </a>
-
     </div>
   </section>
 </div>
@@ -581,19 +545,14 @@
 </div>
 
 <script>
-  /* ── STREAM URL (correct) ── */
   const STREAM_URL = "https://gavrilovic.radioca.st/stream";
-
-  /* ── AUDIO SETUP ── */
   const audio = new Audio(STREAM_URL);
   audio.preload = "none";
   audio.crossOrigin = "anonymous"; 
   audio.volume = 0.80;
 
-  /* ── Waveform bars ── */
   const waveform = document.getElementById('waveform');
   const NUM_BARS = 32;
-
   waveform.innerHTML = "";
   for (let i = 0; i < NUM_BARS; i++) {
     const bar = document.createElement('div');
@@ -603,18 +562,14 @@
   }
   const bars = document.querySelectorAll('.bar');
 
-  /* ── UI ── */
   const playIcon = document.getElementById('play-icon');
   const volumeSlider = document.getElementById('volume');
-
   const PAUSE_SVG = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
   const PLAY_SVG  = '<path d="M8 5v14l11-7z"/>';
-
   let isPlaying = false;
 
   function updateUI() {
     playIcon.innerHTML = isPlaying ? PAUSE_SVG : PLAY_SVG;
-
     bars.forEach(b => {
       if (isPlaying) {
         b.classList.add('playing');
@@ -636,7 +591,7 @@
       }
       updateUI();
     } catch (err) {
-      console.error("Playback blocked or failed:", err);
+      console.error("Playback failed:", err);
       isPlaying = false;
       updateUI();
     }
@@ -656,11 +611,6 @@
       bars.forEach(b => b.style.height = (6 + Math.random() * 12) + 'px');
     }
   }, 2000);
-
-  window.addEventListener("load", () => {
-    // Note: Autoplay is often blocked by browsers until user interacts.
-    // togglePlay(); 
-  });
 </script>
 <script language="javascript" type="text/javascript" src="https://curiosity.shoutca.st/system/streaminfo.js"></script>
 </body>
